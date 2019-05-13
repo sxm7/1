@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.sxm.dao.BookMapper">
+	<resultMap id="bookList" type="book">
+		<id column="bId" property="bId"></id>
+		<result column="bName" property="bName"></result>
+		<result column="tId" property="bookType.tId"></result>
+		<result column="bPrice" property="bPrice"></result>
+		<result column="bAuthor" property="bAuthor"></result>
+		<result column="bJieshao" property="bJieshao"></result>
+		<result column="tName" property="bookType.tName"></result>
+
+	</resultMap>
+	<select id="selBookCount" parameterType="fenye" resultType="int">
+		select count(bId) from book 
+		<where>
+
+			<if test="book.bName !=null and book.bName !=''">
+				and bName like "%"#{book.bName}"%"
+			</if>
+
+			<if test="startPrice!=null and startPrice!=''">
+				and bPrice &gt;=#{startPrice}
+			</if>
+			<if test="endPrice!=null and endPrice!=''">
+				and bPrice &lt;=#{endPrice}
+			</if>
+			<if test="book.bookType.tId !=null and book.bookType.tId !=''">
+				and tId=#{book.bookType.tId}
+			</if>
+			 and book.tId=bookType.tId 
+		</where>
+
+	</select>
+
+	<select id="getBookType" resultType="bookType">
+		select
+		tId,tName from
+		bookType
+
+	</select>
+
+	<select id="selBook" parameterType="fenye" resultMap="bookList">
+		select
+		b.bId,b.bName,t.tName,b.bPrice, b.bAuthor,b.bJieshao from book b,bookType t
+
+		<where>
+			<if test="book.bName !=null and book.bName !=''">
+				and bName like "%" #{book.bName} "%"
+			</if>
+			<if test="book.bookType.tId !=null and book.bookType.tId !=''">
+				and bookType.tId=#{book.bookType.tId}
+			</if>
+			<if test="startPrice!=null and startPrice!=''">
+				and bPrice &gt;=#{startPrice}
+			</if>
+			<if test="endPrice!=null and endPrice!=''">
+				and bPrice &lt;=#{endPrice}
+			</if>
+			and b.tId=t.tId
+		</where>
+		limit #{page},#{pageSize};
+	</select>
+
+	<update id="updateBook" parameterType="book">
+		update book
+		<set>
+			<if test="bName != null and bName !=''">
+				bName=#{bName },
+			</if>
+			<if test="bookType.tId != null and bookType.tId !=''">
+				tId=#{bookType.tId},
+			</if>
+			<if test="bAuthor != null and bAuthor !=''">
+				bAuthor=#{bAuthor},
+			</if>
+			<if test="bJieshao != null and bJieshao !=''">
+				bJieshao=#{bJieshao},
+			</if>
+
+
+		</set>
+		<where>
+			<if test="bId !=null and bId !=''">
+				bId=#{bId}
+			</if>
+
+		</where>
+	</update>
+
+
+	<delete id="delBook" parameterType="int">
+		delete from book where
+		bId=#{bId}
+	</delete>
+
+	<insert id="addBook" parameterType="book">
+		insert into book
+		(bName,tId,bPrice,bAuthor,bJieshao)
+		values(#{bName},#{tId},#{bPrice},#{bAuthor},#{bJieshao})
+
+	</insert>
+
+
+
+
+
+
+
+
+
+
+</mapper>
